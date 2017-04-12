@@ -15,28 +15,25 @@
 // https://github.com/GoogleCloudPlatform/nodejs-docs-samples/tree/master/appengine/websockets
 
 'use strict';
+
 const http = require('http');
 const request = require('request');
-
 const express = require('express');
 const app = express();
 const expressWs = require('express-ws')(app);
 const session = require('express-session');
-
 const bodyParser = require('body-parser');
+const Particle = require('particle-api-js');
+const fs = require('fs');
+
+const particle = new Particle();
 const urlencodedParser = bodyParser.urlencoded({
     extended: false
 })
-
-const Particle = require('particle-api-js');
-const particle = new Particle();
-
 var websocket;
 const ws_port = '50051'; // https://cloud.google.com/shell/docs/limitations#outgoing_connections
 const ws_route = '/ws';
-
-const config_filename = './config.json'
-const fs = require('fs');
+const config_filename = './config.json'; // API keys go here
 const config = JSON.parse(fs.readFileSync(config_filename, 'utf8'));
 
 // In order to use websockets on App Engine, you need to connect directly to
