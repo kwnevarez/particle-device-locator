@@ -2,7 +2,7 @@
     "name": "Locator",
     "version": "0.1.0",
     "description": "Sample implementation of a server that listens for Particle Cloud Geolocation events.",
-    "repository": "https://github.com/rickkas7/locator",
+    "repository": "https://github.com/kwnevarez/particle-device-locator",
     "private": true,
     "scripts": {
         "start": "node app.js",
