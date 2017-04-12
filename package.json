@@ -1,0 +1,31 @@
+{
+    "name": "Locator",
+    "version": "0.1.0",
+    "description": "Sample implementation of a server that listens for Particle Cloud Geolocation events.",
+    "repository": "https://github.com/rickkas7/locator",
+    "private": true,
+    "scripts": {
+        "start": "node app.js",
+        "deploy": "gcloud app deploy app.yaml"
+    },
+    "author": "Google Inc.",
+    "contributors": [
+        {
+            "name": "Ken Nevarez",
+            "email": "kwn@google.com"
+        }
+    ],
+    "license": "Apache Version 2.0",
+    "dependencies": {
+        "request": "^2.81.0",
+        "express": "^4.14.0",
+        "express-ws": "^3.0.0",
+        "express-session": "^1.15.1",
+        "body-parser": "^1.17.1",
+        "particle-api-js": "^6.4.3",
+        "ejs": "^2.5.6"
+    },
+    "engines": {
+        "node": ">=4.3.2"
+    }
+}

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+        <title>
+            Geolocator
+        </title>
+        <style type="text/css">
+html,body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 100%;
+        }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div><script type="text/javascript" src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js">
+</script>
+            <script type="text/javascript">
+// the map
+        var map;
+        var devices = {};
+        var websocket;
+
+        function initialize_map() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: new google.maps.LatLng(37.3990532, -122.05844230000001),
+                zoom: 20,
+            });
+        }
+
+        function create_marker(device_id, pos, acc, pub) {
+            devices[device_id] = {
+                marker: new google.maps.Marker({   // this is the marker at the center of the accuracy circle
+                    title: pub,
+                    position: pos,
+                    map: map,
+                    icon: {
+                        path: google.maps.SymbolPath.CIRCLE,
+                        fillColor: 'blue',
+                        fillOpacity: 1.0,
+                        scale: 4.5,
+                        strokeColor: 'white',
+                        strokeWeight: 1
+                    }
+                }),
+                circle: new google.maps.Circle({    // this is the accuracy circle
+                    map: map,
+                    center: pos,
+                    radius: acc,
+                    strokeWeight: 0.5,
+                    strokeColor: 'white',
+                    fillColor: 'lightblue',
+                })
+            };
+        }
+
+        function update_marker(device_id, pos, acc, pub) {
+            var m = devices[device_id].marker;
+            var c = devices[device_id].circle;
+
+            m.setPosition(pos);
+            m.setTitle(pub);
+            c.setRadius(acc);
+            c.setCenter(pos);
+        }
+
+        function update_map(device_id, pos, acc, pub) {
+            if( !(device_id in devices) ) {
+                // if this is the first time encoutering this device, create it and get out
+                create_marker(device_id, pos, acc, pub);
+            } else {
+                // get the marker and accuracy circle
+                update_marker(device_id, pos, acc, pub);
+            }
+            // make sure all the markers are visible on the map
+            var bounds = new google.maps.LatLngBounds();
+            for (var id in devices) {
+                if (devices.hasOwnProperty(id)) {
+                    bounds.extend(devices[id].marker.getPosition());
+                    bounds.union(devices[id].circle.getBounds());
+                }  
+            }
+            //console.log("fitting map to: "+ bounds.toString());
+            map.fitBounds(bounds);
+        }
+
+        function initialize_websockets() {
+            // The external ip is determined by app.js and passed into the template. 
+            var webSocketHost = location.protocol === 'https:' ? 'wss://' : 'ws://';
+            var externalIp = '<%= external_ip %>';
+            var webSocketUri = webSocketHost + externalIp + ':<%= ws_port %><%= ws_route %>';
+
+            // Establish the WebSocket connection and register event handlers. 
+            console.log('websocket uri: ' + webSocketUri)
+            websocket = new WebSocket(webSocketUri);
+
+            websocket.onopen = function() {
+                console.log('Connected');
+            };
+            websocket.onclose = function() {
+                console.log('Closed');
+            };
+            websocket.onmessage = function(e) {
+                console.log(e.data);
+                var data = JSON.parse(e.data);
+                update_map(data.id, data.pos, data.acc, data.pub);
+            };
+            websocket.onerror = function(e) {
+                console.log('Error: ', e);
+            };
+        }
+
+        function initialize() {
+            console.log('Google Maps API version: ' + google.maps.version);
+            initialize_map();
+            initialize_websockets();
+        }
+        </script><script async="" defer src="https://maps.googleapis.com/maps/api/js?key=<%= map_api_key %>&amp;callback=initialize" type="text/javascript">
+</script>
+    </body>
+</html>
