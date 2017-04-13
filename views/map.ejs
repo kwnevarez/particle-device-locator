@@ -14,24 +14,100 @@ html,body {
         #map {
             height: 100%;
         }
+        
+        .controls {
+            padding: 15px; 
+        }
+        
+        .control {
+            cursor: pointer;
+            background-color: white;
+            border: 5px solid #fff;
+            box-shadow: 0 2px 6px rgba(0,0,0,.3);
+            text-align: center;
+        }
         </style>
     </head>
     <body>
-        <div id="map"></div><script type="text/javascript" src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js">
+        <div id="map"></div>
+        <div id="controls" class="controls">
+            <span id="prev" class="control"><</span>
+            <span id="all" class="control">All Devices</span>
+            <span id="next" class="control">></span>
+        </div>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/particle-api-js/5/particle.min.js">
 </script>
             <script type="text/javascript">
 // the map
         var map;
         var devices = {};
+        var device_ids = [];
+        var current_device;
         var websocket;
 
+        function fit_map_to_devices() {
+            // make sure all the markers are visible on the map
+            if(Object.keys(devices).length > 0) {
+                var bounds = new google.maps.LatLngBounds();
+                for (var id in devices) {
+                    if (devices.hasOwnProperty(id)) {
+                        bounds.extend(devices[id].marker.getPosition());
+                        bounds.union(devices[id].circle.getBounds());
+                    }  
+                }
+                map.fitBounds(bounds);
+            } 
+        }
+        
+        function next_device () {
+            // if there are devices...
+            if(Object.keys(devices).length > 0) {
+                if(current_device) {
+                    var id_index = device_ids.indexOf(current_device);
+                    if (id_index + 1 == device_ids.length) {
+                        current_device = device_ids[0];
+                    } else {
+                        current_device = device_ids[id_index + 1];
+                    }
+                } else {
+                    current_device = device_ids[0];
+                }
+                map.fitBounds(devices[current_device].circle.getBounds());
+            } else {
+                console.log('next_device: no devices')
+            }
+        }
+
+        function prev_device () {
+            // if there are devices...
+            if(Object.keys(devices).length > 0) {
+                if(current_device) {
+                    var id_index = device_ids.indexOf(current_device);
+                    if (id_index - 1 == -1) {
+                        current_device = device_ids[device_ids.length - 1];
+                    } else {
+                        current_device = device_ids[id_index - 1];
+                    }
+                } else {
+                    current_device = device_ids[device_ids.length - 1];
+                }
+                map.fitBounds(devices[current_device].circle.getBounds());
+            } else {
+                console.log('prev_device: no devices')
+            }
+        }
+
+
         function initialize_map() {
-            // by default, center on the US  
+            // by default center on the geographic center of the US  
             var center = new google.maps.LatLng(39.8333333,-98.585522);
+            
+            // create the map
             map = new google.maps.Map(document.getElementById('map'), {
                 center: center,
-                zoom: 20,
+                zoom: 12,
             });
+            
             // if the browser geolocates then center on the location of the user
             if (navigator.geolocation) {
                  navigator.geolocation.getCurrentPosition(function (position) {
@@ -40,6 +116,19 @@ html,body {
                  });
             }
             
+            // setup some custom controls to navigate the devices
+            var controls= document.getElementById("controls");
+            
+            var all_button= document.getElementById("all");
+            all_button.addEventListener('click', fit_map_to_devices);
+            
+            var next_button= document.getElementById("next");
+            next_button.addEventListener('click', next_device);
+            
+            var prev_button= document.getElementById("prev");
+            prev_button.addEventListener('click', prev_device);
+            
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controls);
         }
 
         function create_marker(device_id, pos, acc, pub) {
@@ -66,6 +155,8 @@ html,body {
                     fillColor: 'lightblue',
                 })
             };
+            device_ids.push(device_id);
+            device_ids.sort();
         }
 
         function update_marker(device_id, pos, acc, pub) {
@@ -86,16 +177,6 @@ html,body {
                 // get the marker and accuracy circle
                 update_marker(device_id, pos, acc, pub);
             }
-            // make sure all the markers are visible on the map
-            var bounds = new google.maps.LatLngBounds();
-            for (var id in devices) {
-                if (devices.hasOwnProperty(id)) {
-                    bounds.extend(devices[id].marker.getPosition());
-                    bounds.union(devices[id].circle.getBounds());
-                }  
-            }
-            //console.log("fitting map to: "+ bounds.toString());
-            map.fitBounds(bounds);
         }
 
         function initialize_websockets() {
