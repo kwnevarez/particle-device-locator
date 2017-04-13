@@ -201,31 +201,29 @@ app.get('/map', restrict, (req, res) => {
     });
 });
 
-// fake an event for testing purposes
-app.get('/event', (req, res) => {
-    websocket.send(JSON.stringify({
-        id: '32001a001147343339383037',
-        pub: '2017-03-30T05:00:46.167Z',
-        pos: {
-            lat: 39.043756699999996,
-            lng: -77.4874416
-        },
-        acc: 3439
-    }));
-    res.send('Event!!');
-});
+function random_float(min, max) {
+  return Math.random() * (max - min) + min;
+}
 
-// http://localhost:8080/send_event?id=123ABC&pub=2017-03-30T05:00:46.167Z&lat=39.043756699999996&lng=-77.4874416&acc=50
+function random_int(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// fake the placement of a device, for testing
+// ex: http://localhost:8080/send_event?id=123ABC&pub=2017-03-30T05:00:46.167Z&lat=39.043756699999996&lng=-77.4874416&acc=50
+// for fully random use: http://localhost:8080/send_event
 app.get('/send_event', restrict, (req, res) => {
     console.log('params: '+ JSON.stringify(req.query));
     websocket.send(JSON.stringify({
-        id: req.query.id,
-        pub: req.query.pub, // 2017-03-30T05:00:46.167Z
+        id: req.query.id || random_int(1, 100000).toString(), // if no id is given create a random one
+        pub: req.query.pub || new Date().toISOString(), // 2017-03-30T05:00:46.167Z
         pos: {
-            lat: parseFloat(req.query.lat),
-            lng: parseFloat(req.query.lng)
+            lat: parseFloat(req.query.lat) || random_float( -85.0, 85.0), // random lat and lng if none given
+            lng: parseFloat(req.query.lng) || random_float(-180.0, 180.0)
         },
-        acc: parseInt(req.query.acc)
+        acc: parseInt(req.query.acc) || random_int(50, 1000) // if no accuracy is given create a  random one
     }));
     res.send('Event!!');
 });
