@@ -215,6 +215,21 @@ app.get('/event', (req, res) => {
     res.send('Event!!');
 });
 
+// http://localhost:8080/send_event?id=123ABC&pub=2017-03-30T05:00:46.167Z&lat=39.043756699999996&lng=-77.4874416&acc=50
+app.get('/send_event', restrict, (req, res) => {
+    console.log('params: '+ JSON.stringify(req.query));
+    websocket.send(JSON.stringify({
+        id: req.query.id,
+        pub: req.query.pub, // 2017-03-30T05:00:46.167Z
+        pos: {
+            lat: parseFloat(req.query.lat),
+            lng: parseFloat(req.query.lng)
+        },
+        acc: parseInt(req.query.acc)
+    }));
+    res.send('Event!!');
+});
+
 // see what the external ip address is
 app.get('/ip', (req, res) => {
     get_external_ip((external_ip) => {

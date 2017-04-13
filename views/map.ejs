@@ -134,12 +134,12 @@ html,body {
         function create_marker(device_id, pos, acc, pub) {
             devices[device_id] = {
                 marker: new google.maps.Marker({   // this is the marker at the center of the accuracy circle
-                    title: pub,
+                    title: device_id +'\n'+ pub,
                     position: pos,
                     map: map,
                     icon: {
-                        path: google.maps.SymbolPath.CIRCLE,
-                        fillColor: 'blue',
+                        path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW, // CIRCLE or BACKWARD_CLOSED_ARROW,
+                        fillColor: 'red',
                         fillOpacity: 1.0,
                         scale: 4.5,
                         strokeColor: 'white',
@@ -164,7 +164,7 @@ html,body {
             var c = devices[device_id].circle;
 
             m.setPosition(pos);
-            m.setTitle(pub);
+            m.setTitle(device_id +'\n'+ pub);
             c.setRadius(acc);
             c.setCenter(pos);
         }
