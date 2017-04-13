@@ -26,10 +26,20 @@ html,body {
         var websocket;
 
         function initialize_map() {
+            // by default, center on the US  
+            var center = new google.maps.LatLng(39.8333333,-98.585522);
             map = new google.maps.Map(document.getElementById('map'), {
-                center: new google.maps.LatLng(37.3990532, -122.05844230000001),
+                center: center,
                 zoom: 20,
             });
+            // if the browser geolocates then center on the location of the user
+            if (navigator.geolocation) {
+                 navigator.geolocation.getCurrentPosition(function (position) {
+                     var user = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                     map.setCenter(user);
+                 });
+            }
+            
         }
 
         function create_marker(device_id, pos, acc, pub) {
