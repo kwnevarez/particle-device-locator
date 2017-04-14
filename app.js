@@ -217,7 +217,7 @@ function random_int(min, max) {
 app.get('/send_event', restrict, (req, res) => {
     console.log('params: '+ JSON.stringify(req.query));
     websocket.send(JSON.stringify({
-        id: req.query.id || random_int(1, 100000).toString(), // if no id is given create a random one
+        id: req.query.id || Math.floor(Math.random()*16777215).toString(16), // if no id is given create a random one
         pub: req.query.pub || new Date().toISOString(), // 2017-03-30T05:00:46.167Z
         pos: {
             lat: parseFloat(req.query.lat) || random_float( -50.0, 70.0), // random lat and lng if none given

@@ -5,12 +5,15 @@ This example demonstrates how to visualize your Particle Photon, P1, and Electro
 
 ### Setup
 
-You will need to supply a Google Maps Javascript API key in order for the example to work properly. Set the key in `app.js` using the `map_api_key` variable. 
+You will need to supply a Google Maps Javascript API key in order for the example to work properly. Follow the instructions at [Maps Javascript API: Get API Key](https://developers.google.com/maps/documentation/javascript/get-api-key). Be sure to review and understand the terms of service. 
+ 
+Set the key in `config.json` using the `map_api_key` variable. The code will inject the API key into the web page so the Maps JS library loads properly. This key is not secured so be sure to add referrer restrictions to your key. Consult [Best practices for securely using API keys](https://support.google.com/cloud/answer/6310037?hl=en) for more information.
 
 ### Launch
 
-1. Install the [Google Cloud SDK](https://cloud.google.com/sdk/), including the [gcloud tool](https://cloud.google.com/sdk/gcloud/), and [gcloud app component](https://cloud.google.com/sdk/gcloud-app).
-1. Setup the gcloud tool. This provides authentication to Google Cloud APIs and services.
+1. Install the [Google Cloud SDK](https://cloud.google.com/sdk/). 
+
+1. Setup the gcloud tool. This provides authentication to Google Cloud APIs and services. Learn more from our [Quickstart](https://cloud.google.com/sdk/docs/quickstarts) guides. 
 
         gcloud init
 
@@ -20,10 +23,7 @@ You will need to supply a Google Maps Javascript API key in order for the exampl
 
 1. Clone this repo:
 
-        git clone https://github.com/rickkas7/locator.git
-1. Open a sample folder:
-
-        cd locator/appengine
+        git clone https://github.com/kwnevarez/particle-device-locator
 
 1. Install depedencies using `npm`:
 
@@ -48,7 +48,7 @@ Before you can run or deploy the sample, you will need to create a new firewall 
       --allow tcp:50051 \
       --target-tags websocket \
       --description "Allow websocket traffic on port 50051"
-      
+
 ### Deploy
 
 1. Use the [Google Developers Console](https://console.developer.google.com) to create a project/app id. (App id and project id are identical.)
@@ -63,3 +63,4 @@ Before you can run or deploy the sample, you will need to create a new firewall 
 
 1. Awesome! Your application is now live at `http://YOUR_PROJECT_ID.appspot.com`.  <-- Do not use HTTPS, as noted above, websockets will not work.
 
+*This is a demo, not an official Google product.*
