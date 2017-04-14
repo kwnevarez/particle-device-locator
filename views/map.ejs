@@ -97,38 +97,42 @@ html,body {
             }
         }
 
-
-        function initialize_map() {
-            // by default center on the geographic center of the US  
-            var center = new google.maps.LatLng(39.8333333,-98.585522);
-            
-            // create the map
+        function create_map(center) {
             map = new google.maps.Map(document.getElementById('map'), {
                 center: center,
                 zoom: 12,
             });
             
+            // setup some custom controls to navigate the devices
+            var controls= document.getElementById("controls");
+   
+            var all_button= document.getElementById("all");
+            all_button.addEventListener('click', fit_map_to_devices);
+   
+            var next_button= document.getElementById("next");
+            next_button.addEventListener('click', next_device);
+   
+            var prev_button= document.getElementById("prev");
+            prev_button.addEventListener('click', prev_device);
+   
+            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controls);
+        }
+
+        function initialize_map() {
+
             // if the browser geolocates then center on the location of the user
             if (navigator.geolocation) {
                  navigator.geolocation.getCurrentPosition(function (position) {
-                     var user = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-                     map.setCenter(user);
+                     var center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                     // create the map
+                     create_map(center);
                  });
+            } else  {
+                // by default center on the geographic center of the US  
+                var center = new google.maps.LatLng(39.8333333,-98.585522);
+                // create the map
+                create_map(center);
             }
-            
-            // setup some custom controls to navigate the devices
-            var controls= document.getElementById("controls");
-            
-            var all_button= document.getElementById("all");
-            all_button.addEventListener('click', fit_map_to_devices);
-            
-            var next_button= document.getElementById("next");
-            next_button.addEventListener('click', next_device);
-            
-            var prev_button= document.getElementById("prev");
-            prev_button.addEventListener('click', prev_device);
-            
-            map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controls);
         }
 
         function create_marker(device_id, pos, acc, pub) {
