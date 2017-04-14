@@ -220,10 +220,10 @@ app.get('/send_event', restrict, (req, res) => {
         id: req.query.id || random_int(1, 100000).toString(), // if no id is given create a random one
         pub: req.query.pub || new Date().toISOString(), // 2017-03-30T05:00:46.167Z
         pos: {
-            lat: parseFloat(req.query.lat) || random_float( -85.0, 85.0), // random lat and lng if none given
+            lat: parseFloat(req.query.lat) || random_float( -50.0, 70.0), // random lat and lng if none given
             lng: parseFloat(req.query.lng) || random_float(-180.0, 180.0)
         },
-        acc: parseInt(req.query.acc) || random_int(50, 1000) // if no accuracy is given create a  random one
+        acc: parseInt(req.query.acc) || random_int(25, 3000) // if no accuracy is given create a  random one
     }));
     res.send('Event!!');
 });
