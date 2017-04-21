@@ -40,15 +40,45 @@ html,body {
         	100% { transform: scale(1); }
         }
         .pulse {
+            background: #ffcccc;
         	animation-name: pulse_animation;
         	animation-duration: 5000ms;
         	transform-origin:70% 70%;
         	animation-iteration-count: infinite;
         	animation-timing-function: linear;
         }
+        #loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 1;
+            width: 150px;
+            height: 150px;
+            margin: -75px 0 0 -75px;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            border-top: 16px solid #3498db;
+            border-bottom: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+        }
+
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
         </style>
     </head>
     <body>
+        <div style="display:none;" id="loader"></div>
         <div id="map"></div>
         <div id="controls" class="controls">
             <span id="prev" class="control"><</span>
@@ -147,10 +177,12 @@ html,body {
 
             // if the browser geolocates then center on the location of the user
             if (navigator.geolocation && location.hostname === 'localhost') {
+                document.getElementById('loader').style.display = 'block';
                  navigator.geolocation.getCurrentPosition(function (position) {
                      var center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
                      // create the map
                      create_map(center);
+                     document.getElementById('loader').style.display = 'none';
                  });
             } else  {
                 // by default center on the geographic center of the US  

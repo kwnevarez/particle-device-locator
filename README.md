@@ -9,6 +9,8 @@ You will need to supply a Google Maps Javascript API key in order for the exampl
  
 Set the key in `config.json` using the `map_api_key` variable. The code will inject the API key into the web page so the Maps JS library loads properly. This key is not secured so be sure to add referrer restrictions to your key. Consult [Best practices for securely using API keys](https://support.google.com/cloud/answer/6310037?hl=en) for more information.
 
+Heads up! This app will ask for permision to your location. It is attempting to center the map on your location. 
+
 ### Launch
 
 1. Install the [Google Cloud SDK](https://cloud.google.com/sdk/). 
