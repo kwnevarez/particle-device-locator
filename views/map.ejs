@@ -10,21 +10,41 @@ html,body {
             margin: 0;
             padding: 0;
         }
-
         #map {
             height: 100%;
         }
-        
         .controls {
             padding: 15px; 
         }
-        
         .control {
+            display: inline-block;      
+            width: 60px; 
+            padding: 5px; 
+            text-align: center; 
+            background: whiteSmoke;
+            font-weight: bold;
+            color: #444;
+            text-decoration: none;
+            border: 1px solid #888; 
             cursor: pointer;
-            background-color: white;
-            border: 5px solid #fff;
             box-shadow: 0 2px 6px rgba(0,0,0,.3);
-            text-align: center;
+        }
+        @keyframes pulse_animation {
+        	0% { transform: scale(1); }
+        	30% { transform: scale(1); }
+        	40% { transform: scale(1.08); }
+        	50% { transform: scale(1); }
+        	60% { transform: scale(1); }
+        	70% { transform: scale(1.05); }
+        	80% { transform: scale(1); }
+        	100% { transform: scale(1); }
+        }
+        .pulse {
+        	animation-name: pulse_animation;
+        	animation-duration: 5000ms;
+        	transform-origin:70% 70%;
+        	animation-iteration-count: infinite;
+        	animation-timing-function: linear;
         }
         </style>
     </head>
@@ -44,7 +64,10 @@ html,body {
         var device_ids = [];
         var current_device;
         var websocket;
-
+        var fill_colors = [ 'red', 'orange', 'yellow', 'green',
+            'blue', 'indigo', 'violet', 'white', 'black'
+        ];
+        
         function fit_map_to_devices() {
             // make sure all the markers are visible on the map
             if(Object.keys(devices).length > 0) {
@@ -56,6 +79,8 @@ html,body {
                     }  
                 }
                 map.fitBounds(bounds);
+                var element = document.getElementById('all');
+                element.classList.remove('pulse');
             } 
         }
         
@@ -136,6 +161,8 @@ html,body {
         }
 
         function create_marker(device_id, pos, acc, pub) {
+            var fc = fill_colors.shift(); // pull off a color
+            console.log('fill color: '+ fc);
             devices[device_id] = {
                 marker: new google.maps.Marker({   // this is the marker at the center of the accuracy circle
                     title: device_id +'\n'+ pub,
@@ -143,7 +170,7 @@ html,body {
                     map: map,
                     icon: {
                         path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW, // CIRCLE or BACKWARD_CLOSED_ARROW,
-                        fillColor: '#'+ Math.floor(Math.random()*16777215).toString(16), // random color for each new device
+                        fillColor: fc, // random color for each new device
                         fillOpacity: 1.0,
                         scale: 4.5,
                         strokeColor: 'white',
@@ -159,8 +186,13 @@ html,body {
                     fillColor: 'lightblue',
                 })
             };
+            fill_colors.push(fc); // put the color back
             device_ids.push(device_id);
             device_ids.sort();
+            
+            var element = document.getElementById('all');
+            element.classList.add('pulse');
+            
         }
 
         function update_marker(device_id, pos, acc, pub) {

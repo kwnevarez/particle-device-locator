@@ -223,7 +223,7 @@ app.get('/send_event', restrict, (req, res) => {
             lat: parseFloat(req.query.lat) || random_float( -50.0, 70.0), // random lat and lng if none given
             lng: parseFloat(req.query.lng) || random_float(-180.0, 180.0)
         },
-        acc: parseInt(req.query.acc) || random_int(25, 3000) // if no accuracy is given create a  random one
+        acc: parseInt(req.query.acc) || random_int(300, 3000) // if no accuracy is given create a  random one
     }));
     res.send('Event!!');
 });
