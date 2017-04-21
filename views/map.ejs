@@ -121,7 +121,7 @@ html,body {
         function initialize_map() {
 
             // if the browser geolocates then center on the location of the user
-            if (navigator.geolocation) {
+            if (navigator.geolocation && location.hostname === 'localhost') {
                  navigator.geolocation.getCurrentPosition(function (position) {
                      var center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
                      // create the map
